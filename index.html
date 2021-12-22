@@ -1,158 +1,291 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyberGhost 8 Changelog</title>
-    <link rel="icon" type="image/png" href="https://download.cyberghostvpn.com/windows/cg8-changelog/img/favicon-192x192.webp" sizes="192x192">
-    <link rel="icon" type="image/png" href="https://download.cyberghostvpn.com/windows/cg8-changelog/img/favicon-160x160.webp" sizes="160x160">
-    <link rel="icon" type="image/png" href="https://download.cyberghostvpn.com/windows/cg8-changelog/img/favicon-96x96.webp" sizes="96x96">
-    <link rel="icon" type="image/png" href="https://download.cyberghostvpn.com/windows/cg8-changelog/img/favicon-16x16.webp" sizes="16x16">
-    <link rel="icon" type="image/png" href="https://download.cyberghostvpn.com/windows/cg8-changelog/img/favicon-32x32.webp" sizes="32x32">
-    <link rel="apple-touch-icon" sizes="57x57" href="https://download.cyberghostvpn.com/windows/cg8-changelog/img/apple-touch-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="https://download.cyberghostvpn.com/windows/cg8-changelog/img/apple-touch-icon-114x114.png?v=1">
-    <link rel="apple-touch-icon" sizes="72x72" href="https://download.cyberghostvpn.com/windows/cg8-changelog/img/apple-touch-icon-72x72.png?v=1">
-    <link rel="apple-touch-icon" sizes="144x144" href="https://download.cyberghostvpn.com/windows/cg8-changelog/img/apple-touch-icon-144x144.png?v=1">
-    <link rel="apple-touch-icon" sizes="60x60" href="https://download.cyberghostvpn.com/windows/cg8-changelog/img/apple-touch-icon-60x60.png?v=1">
-    <link rel="apple-touch-icon" sizes="120x120" href="https://download.cyberghostvpn.com/windows/cg8-changelog/img/apple-touch-icon-120x120.png?v=1">
-    <link rel="apple-touch-icon" sizes="76x76" href="https://download.cyberghostvpn.com/windows/cg8-changelog/img/apple-touch-icon-76x76.png?v=1">
-    <link rel="apple-touch-icon" sizes="152x152" href="https://download.cyberghostvpn.com/windows/cg8-changelog/img/apple-touch-icon-152x152.png?v=1">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://download.cyberghostvpn.com/windows/cg8-changelog/img/apple-touch-icon-180x180.png?v=1">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://download.cyberghostvpn.com/windows/cg8-changelog/css/github-markdown.css?v=2"/></head>
+    <meta charset="utf-8" />
+    <base href=https://dnsleak.com/">
+    <title>log4j Vulnerability Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+    <meta name="keywords" content="dns, dns leak, dns leak test, domain name leak, domain name resolution leak, privacy, internet privacy, dns privacy, dns security">
+    <meta name="description" content="DNS Leak Test is a free tool for the internet allowing end users to test their DNS activity to see if their VPN or Proxy service is leaking DNS requests, effectively unmasking end user's privacy and security.">
+    <!--[if lt IE 9]>
+    <script src="/html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+
+    <![endif]-->
+    <link href='https://dnsleak.com/fonts.googleapis.com/css?family=Fauna+One' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" media="all" href="https://dnsleak.com/assets/application-ca073ed759ceda6ee73f8b3e2b262655.css" />
+
+    <script>
+        function startCheck(){
+            $("#startButton").hide()
+            $("#progress").html()
+            $("#result").html("Running test...")
+            $("#result").show();
+            $("#progress").show()
+            var progressTextOk = '<p>Checking if TCP Port %s is blocked.... <b style="color:green">OK - PORT BLOCKED</b></p>'
+            var progressTextFailed = '<p>Checking if TCP Port %s is blocked.... <b style="color:red">FAILED - PORT OPEN</b></p>'
+            var totalText = ""
+            var ports = [389,636,1099,1389,3268,3269];
+            var failureCounter = 0;
+            var counter = 0
+
+            for (let i = 0; i < ports.length; i++) {
+                var fullURL = "http://35.153.34.72:"+ports[i]
+
+                $.ajax({url:
+                    fullURL,
+                    timeout:1000,
+                    cache:false})
+                    .done(function() {
+                        failureCounter = failureCounter + 1;
+                        totalText = totalText.concat(progressTextFailed.replace("%s", ports[i]));
+                        $("#progress").html(totalText)
+                    })
+                    .fail(function() {
+
+                        totalText = totalText.concat(progressTextOk.replace("%s", ports[i]));
+                        $("#progress").html(totalText)
+                    })
+                    .always(function() {
+                        counter = counter + 1
+                        //Finished?
+                        if (counter==ports.length-1) {
+                            if (failureCounter>0) {
+                                $("#result").html('<p style="color:red">Not all ports are properly blocked. Please check if the VPN is activated!</p>');
+                            } else {
+                                $("#result").html('<p style="color:green">All ports are blocked. Our log4j mitigation is active!</p>');
+                            }
+                        }
+                    })
+            }
+        }
+    </script>
+</head>
 <body>
-    </div>
-    <div class="markdown-body">
-	
-	  <div class="container">
-        <h2>8.3.2 (06.10.2021)</h2>
+<div id="topbar">
+</div>
+<div class="leak__test">
+    <div class="container">
+        <div class="outer__leak">
+            <div class="leak__top">
+                <h2>log4j Vulnerability Test</h2>
+                <div class="leak__box">
+                    <div class="leak__connection">
+                        <div class="leak__field ">
+                            <p>This test will perform some requests using ports which are abused by the log4j vulnerability. When you are connected with our VPN, these ports will be blocked and you should be protected.</p>
+                            <div id="progress" style="display: none"> </div>
 
-        <p><img src="https://img.shields.io/badge/8.3.2.8404-CG8 Live-%23ffc107.svg"></p>
-		<ul>
-			<li>Windows 11 compatibility update - CyberGhost is now fully Windows 11 compatible</li>
-			<li>Added new Windows 11 tweaks in Privacy Guard</li>
-			<li>And as always, general bug fixing and optimizations on the service</li>
-		</ul>
-      </div>
-	
-	  <div class="container">
-        <h2>8.3.1 (01.09.2021)</h2>
+                            <div id="result" style="display: none;font-size:14pt;font-weight:bold"> </div>
 
-        <p><img src="https://img.shields.io/badge/8.3.1.8249-CG8 Live-%23ffc107.svg"></p>
-		<ul>
-			<li>Updated WireGuard to 0.4</li>
-			<li>Updated Antivirus Engine to be completely integrated now</li>
-			<li>New Dedicated IP functionalities</li>
-			<li>New reminders for the Privacy Assistant</li>
-			<li>KillSwitch can now be disabled</li>
-			<li>CyberGhost DNS Servers can now be disabled</li>
-			<li>And as always, general bug fixing and optimizations on the service</li>
-		</ul>
-      </div>
-	
-	  <div class="container">
-        <h2>8.3.0 (30.06.2021)</h2>
+                        </div>
 
-        <p><img src="https://img.shields.io/badge/8.3.0.8042-CG8 Live-%23ffc107.svg"></p>
-		<ul>
-			<li>Updated OpenVPN to 2.5.3 (from 2.5.1)</li>
-			<li>Updated Antivirus Engine to Version 2.0 (from 1.0) including scan optimizations - Engine update will be rolled out independently within the next days</li>
-			<li>Added the possibility to schedule scans within Antivirus</li>
-			<li>Added the new Prevention Engine to Antivirus</li>
-			<li>Added a new option "Scan with CyberGhost" to the Explorer right click file system menu</li>
-			<li>Added the possibility to schedule updates for more than 24h within the Updater</li>
-			<li>Privacy Guard now fully supports Windows 10 21H1</li>
-			<li>Added new tweaks for Privacy Guard</li>
-			<li>META API optimizations - We're constantly working on bringing CyberGhost to restricted countries</li>
-			<li>The X within notifications will now close all notifications instead of just removing the current one</li>
-			<li>And as always, general bug fixing and optimizations on the service</li>
-		</ul>
-      </div>
-	
 
-      <div class="container">
-        <h2>8.2.5 (26.05.2021)</h2>
-
-        <p><img src="https://img.shields.io/badge/8.2.5.7817-CG8 Live-%23ffc107.svg"></p>
-		<ul>
-			<li>You can now select your MTU settings within the VPN between Default, Small or Auto</li>
-			<li>Our CyberGhost Private Browser can be installed from the Smart Rules menu and paired along with VPN connections</li>
-			<li>We've restructured our servers list for easier and faster connections</li>
-			<li>Fixed an issue where accounts with mobile subscriptions had a trial banner displayed inside the client</li>
-			<li>We did some Spring cleaning and took care of various other minor issues</li>
-		</ul>
-
-      </div>
-
-      <div class="container">
-        <h2>8.2.4 (29.04.2021)</h2>
-
-        <p><img src="https://img.shields.io/badge/8.2.4.7664-CG8 Live-%23ffc107.svg"></p>
-		<ul>
-			<li>Added new tweaks in Privacy Guard for Microsoft Edge and for the new tab, Mozilla Firefox</li>
-			<li>Added a popup message whenever a DIP IP change happens</li>
-			<li>Adjusted the client to always open in the centre position, if closed previously or in tray mode</li>
-			<li>Updated the OpenVPN client version to 2.5.1 (from 2.5.0)</li>
-			<li>New Beta Servers servers tab available in the client which includes 4 locations (2 in EU and 2 in US)</li>
-			<li>And as always, general bug fixing and optimizations on the service</li>
-		</ul>
-      </div>
-
-      <div class="container">
-        <h2>8.2.3 (01.03.2021)</h2>
-
-        <p><img src="https://img.shields.io/badge/8.2.3.7412-CG8 Live-%23ffc107.svg"></p>
-        <p>This release includes a hotfix for an isolated issue on the client side</p>
-
-      </div>
-
-      <div class="container">
-        <h2>8.2.2 (23.02.2021)</h2>
-
-        <p><img src="https://img.shields.io/badge/8.2.2.7374-CG8 Live-%23ffc107.svg"></p>
-        <ul>
-          <li>OpenVPN 2.5.0 - new network driver that can be enabled from the settings menu. This feature is still considered to be experimental and in a BETA phase</li>
-          <li>Delayed start (used along with the auto-connect on startup feature) - you can now add a custom delay, in seconds, after which the connection will be triggered</li>
-          <li>Added “Send feedback” button on the login/signup screens</li>
-          <li>Added extra debug info that can be viewed in the "Send feedback" and toggled on or off. This addition greatly improves our future debug capabilities from within the client</li>
-          <li>Fixed several edgecases on the connection performance</li>
-
-        </ul>
-
-      </div>
-
-      <div class="container">
-        <h2>8.2.1 (25.01.2021)</h2>
-
-        <p><img src="https://img.shields.io/badge/8.2.1.7176-CG8 Live-%23ffc107.svg"></p>
-        <ul>
-          <li>META API Support. Countries with restrictions towards our API should now be unblocked</li>
-          <li>UI Speed improvements</li>
-          <li>Privacy Guard update tweaks for H2 of 2020</li>
-          <li>Added the option to remove a Dedicated IP</li>
-          <li>Fixed an isolated issue when launching the client after an app update</li>
-          <li>Changed the default startup screen to Login when launching the app for the first time</li>
-          <li>And a bunch of bug fixes</li>
-
-        </ul>
-
-      </div>
-        <div class="container">
-          <h2>8.2.0 (08.12.2020)</h2>
-
-          <p><img src="https://img.shields.io/badge/8.2.0.7018-CG8 Live-%23ffc107.svg"></p>
-          <ul>
-            <li>Reworked and improved the Connection features. New Privacy features are now available</li>
-            <li>Changed the servers list view, based on cities</li>
-            <li>Updated the OpenVPN lib to 2.5.0</li>
-            <li>Added the option to remove a Dedicated IP</li>
-            <li>Reworked the way notifications are delivered on the Security Suite</li>
-            <li>Client now auto-detects and uses the best MTU value for individual devices</li>
-            <li>Changed the default values used for MTU on IPv4 and IPv6 connections</li>
-            <li>Fixed several issues on the VPN and Security Suite addons</li>
-            <li>And last but not least, added this cool new changelog feature</li>
-          </ul>
+                        <div class="test__button">
+                            <a id="startbtn" onclick="window.startCheck()">Start</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br><br>
 
         </div>
+        <div class="faq__block">
+            <div class="container">
+                <div class="outer__faq">
+                    <h2>Want To Know More?</h2>
+                    <div class="inner__faq">
+                        <div class="faq__elem active__faq">
+                            <div class="faq__head">
+                                <h5>How does the log4j vulnerability work and why a VPN might help</h5>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25">
+                                    <g id="Group_45977" data-name="Group 45977" transform="translate(-975.5 -2889.5)">
+                                        <circle id="Ellipse_1640" data-name="Ellipse 1640" cx="12" cy="12" r="12" transform="translate(976 2890)" fill="#fff" stroke="rgba(0,0,0,0)" stroke-width="1" />
+                                        <g id="Caret_down" data-name="Caret down" transform="translate(983 2898.5)">
+                                            <path id="Path" d="M9.28.22a.75.75,0,0,1,0,1.061l-4,4a.75.75,0,0,1-1.061,0l-4-4A.75.75,0,0,1,1.28.22l3.47,3.47L8.22.22A.75.75,0,0,1,9.28.22Z" transform="translate(0.25 0.75)" fill="#56b14d" />
+                                        </g>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div class="faq__content">
+                                <p>Many applications running on both home computers and servers, a library called "log4j" is used. With the help of these libraries, log reports can be created and saved.
+                                    Applications can use it to create error reports, for example, which can then be saved and used for error analysis when needed. These error reports often contain
+                                    information about which data triggered the error.
+                                    <br/><br/>
+                                    Let's take a fictitious messenger as an example. If this fictitious messenger receives a chat message that is apparently
+                                    faulty, i.e. does not meet the expectation, this messenger could save an error report with the content of this faulty chat message.<br>
+
+                                    This is where the first point of attack kicks in. An attacker tries to get a vulnerable application to create just such a log with certain content.
+                                    For example, he could send a deliberately broken chat message with special crafted content to a victim and the victim's messenger saves the content of this chat message.
+                                    <br/><br/>
+                                    However, this is still not enough for the attack. Another feature comes into play: the log4j library is also able to retrieve additional log content from another server if the payload to be logged contains a specific command. If we think about the previous step, an attacker would now send a specific, broken chat message that contains that very command. The messenger again tries to generate a bug report, but encounters the command in the payload and retrieves more log data from a remote server.
+
+                                    An attacker now operates an appropriately prepared server and this server now delivers malware. After retrieving this malware, the Log4j library now executes it on the victim's computer.
+                                    <br/><br/>
+                                    <b>How can our VPN protect?</b><br/>
+
+                                    Our VPN routes all Internet traffic through our VPN servers. Even the malicious payloads retrieved from the user's Messenger in the above example are retrieved via the VPN connection. Our VPN now blocks exactly these connections so that the actual malware cannot be retrieved. </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
+<div class="benefits__block">
+    <div class="container">
+        <div class="outer__benefits">
+            <div class="left__benefits">
+                <h2>Benefits Of Hiding Your IP Address</h2>
+                <p>PIA VPN acts like a safety buffer between your device and the websites or applications you connect to.</p>
+                <div class="benefit__list">
+                    <div class="benefit__elem">
+                        <p><span><img width="" height="" alt="Checkmark" class="" src="/assets/checkicon-6e810a8f76248dc125f1aafbb6a219c3.png" /></span> An extra layer of protection</p>
+                    </div>
+                    <div class="benefit__elem">
+                        <p><span><img width="" height="" alt="Checkmark" class="" src="/assets/checkicon-6e810a8f76248dc125f1aafbb6a219c3.png" /></span> Cannot be tracked</p>
+                    </div>
+                    <div class="benefit__elem">
+                        <p><span><img width="" height="" alt="Checkmark" class="" src="/assets/checkicon-6e810a8f76248dc125f1aafbb6a219c3.png" /></span> Internet traffic is encrypted</p>
+                    </div>
+                    <div class="benefit__elem">
+                        <p><span><img width="" height="" alt="Checkmark" class="" src="/assets/checkicon-6e810a8f76248dc125f1aafbb6a219c3.png" /></span> Choose server location</p>
+                    </div>
+                    <div class="benefit__elem">
+                        <p><span><img width="" height="" alt="Checkmark" class="" src="/assets/checkicon-6e810a8f76248dc125f1aafbb6a219c3.png" /></span> IP address is concealed</p>
+                    </div>
+                    <div class="benefit__elem">
+                        <p><span><img width="" height="" alt="Checkmark" class="" src="/assets/checkicon-6e810a8f76248dc125f1aafbb6a219c3.png" /></span> Access your favorite content</p>
+                    </div>
+                </div>
+                <div class="benefit__button">
+                    <a href="https://www.privateinternetaccess.com/buy-vpn-online">Get Started With PIA VPN</a>
+                </div>
+            </div>
+            <div class="right__benefits">
+                <img width="" height="" alt="Benefits" class="" src="/assets/benefit-291c8d5457c9f0fcf0061f814d27d63f.png" /> </div>
+        </div>
+    </div>
+</div>
+<div class="why__block">
+    <div class="container">
+        <div class="outer__why">
+            <h2>Why Choose PIA VPN?</h2>
+            <div class="why__inner">
+                <div class="why__elem">
+                    <div class="why__image">
+                        <img width="" height="" alt="Anonymity" class="" src="/assets/why1-cebc12b495817c95d6784ebea292eb78.svg" /> </div>
+                    <div class="why__info">
+                        <h6>Anonymity</h6>
+                        <p>Strict no-logs policy so you’re
+                            totally anonymous all the time.</p>
+                    </div>
+                </div>
+                <div class="why__elem">
+                    <div class="why__image">
+                        <img width="" height="" alt="Transparency" class="" src="/assets/why2-ddece0266707ab9c6a45d6864f6cdfc3.svg" /> </div>
+                    <div class="why__info">
+                        <h6>Transparency</h6>
+                        <p>Trusted open-source VPN
+                            protocols for full transparency.</p>
+                    </div>
+                </div>
+                <div class="why__elem">
+                    <div class="why__image">
+                        <img width="" height="" alt="Expertise" class="" src="/assets/why3-f726a3104cb160d82e9794ca820c99a3.svg" /> </div>
+                    <div class="why__info">
+                        <h6>Expertise</h6>
+                        <p>10+ years of expertise as the
+                            world’s leading VPN provider.</p>
+                    </div>
+                </div>
+                <div class="why__elem">
+                    <div class="why__image">
+                        <img width="" height="" alt="Support" class="" src="/assets/why4-a03f13c8fbf3fd010dfb574e409bc35c.svg" /> </div>
+                    <div class="why__info">
+                        <h6>Support</h6>
+                        <p>24/7 live customer support for all your needs.</p>
+                    </div>
+                </div>
+                <div class="why__elem">
+                    <div class="why__image">
+                        <img width="" height="" alt="Speed" class="" src="/assets/why5-9328a6364c37bbd2d25338c25a847fcc.svg" /> </div>
+                    <div class="why__info">
+                        <h6>Speed</h6>
+                        <p>A global network of world-class
+                            servers for the fastest speeds</p>
+                    </div>
+                </div>
+                <div class="why__elem">
+                    <div class="why__image">
+                        <img width="" height="" alt="Utility" class="" src="/assets/why6-ff02ae929f153c7835564e2951fb7d14.svg" /> </div>
+                    <div class="why__info">
+                        <h6>Utility</h6>
+                        <p>One subscription covers
+                            10 devices simultaneously.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="more__tools">
+    <div class="container">
+        <div class="outer__tools">
+            <h2>More Tools For You</h2>
+            <div class="inner__tools">
+                <a href="https://emailipleak.com/" class="elem__tool">
+                    <span><img width="" height="" alt="Email Leak Test" class="" src="/assets/emailicon-6d7136294c996e03cee80e1b8fab4ffa.svg" /></span>
+                    <p>Email Leak Test</p>
+                </a>
+                <a href="https://ipv6leak.com" class="elem__tool">
+                    <span><img width="" height="" alt="IPv6 Leak Test" class="" src="/assets/documenticon-2d9987ad9e991aac61717e30fd6a1faf.svg" /></span>
+                    <p>IPv6 Leak Test</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="try__pia">
+    <div class="container">
+        <div class="outer__try">
+            <div class="top__try">
+                <div class="try__left">
+                    <h2>Still Not Convinced?
+                        Try PIA Risk-Free</h2>
+                    <p>You’re covered by our 30-day money-back guarantee. If you’re not satisfied, get a refund.</p>
+                    <div class="try__buttons">
+                        <a href="https://www.privateinternetaccess.com/buy-vpn-online">Get Private Internet Access</a>
+                        <span></span>
+                        <div class="try__logo">
+                            <img width="" height="" alt="PCMag" class="" src="/assets/trylogo-39aaadc8ff4063bdaf46241fd8c188bc.svg" /> </div>
+                    </div>
+                </div>
+                <div class="try__right">
+                    <img width="" height="" alt="Money Back Guarantee" class="" src="/assets/tryimage-78eaa5d266347c9b2bf7d496be0a74c9.png" /> </div>
+            </div>
+            <div class="bottom__try">
+                <p>Disclaimer: Per our <a target="_blank" href="https://www.privateinternetaccess.com/terms-of-service">Terms and Conditions</a>, using PIA VPN for illegal purposes is not encouraged.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="footer">
+    <p>
+        <a href="https://dnsleak.com/">DNS Leak Test</a> |
+        <a href="http://emailipleak.com/">Email Leak Test</a> |
+        <a href="http://ipv6leak.com/">IPv6 Leak Test</a>
+    </p>
+    <p>
+        <a href="/terms_of_service">Terms of Service</a> |
+        <a href="/privacy_policy">Privacy Policy</a>
+    </p>
+    <p>Copyright &copy; 2021 Private Internet Access, Inc.</p>
+</div>
+
+<script src="/assets/application-5320effd0b50fd4f94629bc3312430ef.js"></script>
 </body>
 </html>
